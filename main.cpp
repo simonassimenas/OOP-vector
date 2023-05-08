@@ -1,4 +1,4 @@
-#include "library.h"
+#include "Headers/library.h"
 
 /// @brief Pagrindinė funkcija kontroliuojanti programą ir pasirinkimus.
 int main() {

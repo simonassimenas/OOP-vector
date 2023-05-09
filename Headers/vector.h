@@ -1,7 +1,7 @@
 #include <memory>
 #include <algorithm>
 
-template <class T> 
+template <class T>
 class Vector {
    public:
       typedef T* iterator;
@@ -51,28 +51,28 @@ class Vector {
 
       // ==ELEMENT ACCESS==
       reference at(size_type index) {
-         if (index >= size() || index < 0)
+         if (index >= size())
             throw std::out_of_range("Index out of range");
          
          return data[index];
       }
 
       const_reference at(size_type index) const {
-         if (index >= size() || index < 0)
+         if (index >= size())
             throw std::out_of_range("Index out of range");
          
          return data[index];
       }
 
       reference operator[](size_type index) {
-         if (index >= size() || index < 0)
+         if (index >= size())
             throw std::out_of_range("Index out of range");
          
          return data[index];
       }
 
       const_reference operator[](size_type index) const {
-         if (index >= size() || index < 0)
+         if (index >= size())
             throw std::out_of_range("Index out of range");
          
          return data[index];
@@ -169,15 +169,11 @@ class Vector {
          return std::numeric_limits<size_type>::max() / sizeof(T);
       }
 
-      size_type reserve(size_type newCapacity) {
-         if (newCapacity > max_size() || newCapacity < 0)
-            throw std::out_of_range("Exceeded maximum size limit");
-         
+      void reserve(size_type newCapacity) {
          if (newCapacity > capacity()) {
             iterator new_data = alloc.allocate(newCapacity);
             iterator new_avail = std::uninitialized_copy(data, avail, new_data);
             uncreate();
-
             data = new_data;
             avail = new_avail;
             limit = data + newCapacity;
@@ -206,6 +202,9 @@ class Vector {
       }
 
       void push_back(const T& value) {
+         if (avail == limit)
+            grow();
+         
          unchecked_append(value);
       }
 
@@ -224,7 +223,7 @@ class Vector {
       }
 
       void resize(size_type n, const T& value = T{}) {
-         if (n > max_size() || n < 0)
+         if (n > max_size())
             throw std::out_of_range("Exceeded maximum size limit");
          
          if (n > size()) {
@@ -262,7 +261,7 @@ class Vector {
       }
 
       bool operator!=(const Vector<T>& rhs) {
-         return !(*this == rhs);
+         return *this != rhs;
       }
 
       bool operator<(const Vector<T>& rhs) {
@@ -274,11 +273,11 @@ class Vector {
       }
 
       bool operator<=(const Vector<T>& rhs) {
-         return !(*this > rhs);
+         return *this <= rhs;
       }
 
       bool operator>=(const Vector<T>& rhs) {
-         return !(*this < rhs);
+         return *this >= rhs;
       }
 
       void swap(Vector<T>& lhs, Vector<T>& rhs) {
@@ -298,7 +297,7 @@ class Vector {
       }
 
       void create(size_type n, const T& value) {
-         if (n > max_size() || n < 0)
+         if (n > max_size())
             throw std::out_of_range("Exceeded maximum size limit");
          
          data = alloc.allocate(n);
@@ -336,4 +335,12 @@ class Vector {
       void unchecked_append(const T& value) {
          alloc.construct(avail++, value);
       }
+};
+template<class T>
+class allocator {
+  public:
+    T* allocate(size_t);
+    void deallocate(T*, size_t);
+    void construct(T*, const T&);
+    void destroy(T*);
 };

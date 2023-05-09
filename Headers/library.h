@@ -5,8 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <limits>
-// #include <vector>
-#include "vector.h"
+#include <vector>
 #include <random>
 #include <chrono>
 #include <sstream>
@@ -14,6 +13,8 @@
 #include <execution>
 #include <list>
 #include <deque>
+#include <memory>
+#include "vector.h"
 
 using namespace std::chrono;
 using std::chrono::duration;
@@ -113,7 +114,7 @@ public:
     Studentas() : mGalutinisVid(0), mGalutinisMed(0) {}
 
     /// @brief Konstruktorius, sukuriantis Studento objektą su perduodamais parametrais.
-    Studentas(string vardas, string pavarde, vector<int>& pazVec, int egzaminas) {
+    Studentas(string vardas, string pavarde, Vector<int>& pazVec, int egzaminas) {
         mVardas = vardas;
         mPavarde = pavarde;
         skaiciuotiVidurki(pazVec, egzaminas);
@@ -168,12 +169,12 @@ public:
 
     // ==METODAI==
     /// @brief Metodas, suskaičiuojantis studento pažymių vidurkį ir nustatantis galutinį balą. paskaičiuotą gaunant pažymių vidurkį.
-    void skaiciuotiVidurki(const vector<int>& pazVec, int& egzaminas) {
+    void skaiciuotiVidurki(const Vector<int>& pazVec, int& egzaminas) {
         mGalutinisVid = (0.4 * (accumulate(pazVec.begin(), pazVec.end(), 0) / pazVec.size())) + (0.6 * egzaminas);
     }
 
     /// @brief Metodas, suskaičiuojantis studento pažymių vidurkį ir nustatantis galutinį balą. paskaičiuotą gaunant pažymių medianą.
-    void skaiciuotiMediana(vector<int>& pazVec, int& egzaminas) {
+    void skaiciuotiMediana(Vector<int>& pazVec, int& egzaminas) {
         int size = pazVec.size();
         sort(pazVec.begin(), pazVec.end());
 
@@ -185,9 +186,9 @@ public:
 
     // ==IVESTIES OPERATORIUS==
     /// @brief Įvesties operatorius, nuskaitantis duomenis iš failo ir sukuriantis Studento objektą.
-    friend istream& operator>>(istream& input, vector<Studentas>& group) {
+    friend istream& operator>>(istream& input, Vector<Studentas>& group) {
         string vardas, pavarde, line;
-        vector<int> pazVec;
+        Vector<int> pazVec;
         int pazymys;
 
         getline(input, line);
@@ -204,8 +205,10 @@ public:
 
         int egzaminas = pazVec.back();
         pazVec.pop_back();
+        Studentas temp(vardas, pavarde, pazVec, egzaminas);
 
-        group.emplace_back(vardas, pavarde, pazVec, egzaminas);
+        group.emplace_back(temp);
+        
 
         return input;
     }
@@ -251,13 +254,13 @@ public:
 };
 
 /// @brief Funkcija, skirta skaityti duomenis iš failo.
-void failoSkaitymas(vector<Studentas>& grupe, string filename);
+void failoSkaitymas(Vector<Studentas>& grupe, string filename);
 
 /// @brief Funkcija, skirta išvesti duomenis į du skirtingus failus: "saunuoliai.txt" ir "vargsai.txt".
-void failoIrasymas(vector<Studentas>& grupe, int partPoint);
+void failoIrasymas(Vector<Studentas>& grupe, int partPoint);
 
 /// @brief Funkcija, skirta atskirti studentus į dvi grupes pagal galutinį balą, gražinanti atskirties tašką.
-int partitionIrSort(vector<Studentas>& grupe, bool rusiavimasChoice);
+int partitionIrSort(Vector<Studentas>& grupe, bool rusiavimasChoice);
 
 /// @brief Funkcija, skirta rūšiavimui pagal vardus abėcėline tvarka.
 bool varduPalyginimas(const Studentas& a, const Studentas& b);
@@ -269,7 +272,7 @@ int randomSkaicius();
 void failoGeneravimas();
 
 /// @brief Funkcija, skirta pasirinkti kokie galutiniai balai bus skaičiuojami ir įvesti studentų duomenis rankomis.
-void naudotojoIvestis(vector<Studentas>& grupe);
+void naudotojoIvestis(Vector<Studentas>& grupe);
 
 /// @brief Funkcija, skirta įvesti vieno studento duomenis rankomis.
 void pildymas(Studentas& temp);

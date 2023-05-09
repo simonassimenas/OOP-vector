@@ -2,7 +2,7 @@
 
 /// @brief Pagrindinė funkcija kontroliuojanti programą ir pasirinkimus.
 int main() {
-    vector<Studentas> grupe;
+    Vector<Studentas> grupe;
 
     cout << "Skaitysite is failo(1) ar pildysite patys(0)?\n";
     bool skaitymas = getBoolInput();

@@ -1,6 +1,6 @@
 #include "Headers/library.h"
 
-void failoSkaitymas(vector<Studentas>& grupe, string filename) {
+void failoSkaitymas(Vector<Studentas>& grupe, string filename) {
     const int bufDydis = 1024 * 1024 * 100;
     char* buferis = new char[bufDydis];
 
@@ -44,7 +44,7 @@ void failoSkaitymas(vector<Studentas>& grupe, string filename) {
     }
 }
 
-void failoIrasymas(vector<Studentas>& grupe, int partPoint) {
+void failoIrasymas(Vector<Studentas>& grupe, int partPoint) {
     const string filename_v = "vargsai.txt";
     const string filename_s = "saunuoliai.txt";
     ofstream fout_v(filename_v);
@@ -92,7 +92,7 @@ void failoIrasymas(vector<Studentas>& grupe, int partPoint) {
     }
 }
 
-int partitionIrSort(vector<Studentas>& grupe, bool rusiavimasChoice) {
+int partitionIrSort(Vector<Studentas>& grupe, bool rusiavimasChoice) {
     auto it = grupe.begin();
 
     auto pradzia_part = high_resolution_clock::now();
@@ -202,7 +202,7 @@ void failoGeneravimas() {
     }
 }
 
-void naudotojoIvestis(vector<Studentas> &grupe) {
+void naudotojoIvestis(Vector<Studentas> &grupe) {
     Studentas laikinas;
     
     string outputPasirinkimas;
@@ -244,7 +244,7 @@ void pildymas(Studentas &temp) {
     cout << "Rankinis pazymiu ivedimas(1) arba automatinis generavimas(0)?\n";
     bool rankinis = getBoolInput();
 
-    vector<int> pazVec;
+    Vector<int> pazVec;
     int resSpace = 16;
     pazVec.reserve(resSpace);
     int inputOrNum;

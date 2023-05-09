@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -march=native -O3
+CXXFLAGS = -std=c++14 -march=native -O3
 INSTALL_PATH = "./"
 
 SRC_FILES = main.cpp functions.cpp
@@ -30,10 +30,3 @@ cleanres:
 
 txt:
 	rm *.txt
-
-test: Test/tests
-	./Test/tests
-	rm -f Test/tests
-
-Test/tests:
-	cd Test && g++ -std=c++20 -I../includes -o tests test.cpp

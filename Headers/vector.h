@@ -21,8 +21,8 @@ class Vector {
          create(n, value);
       }
 
-      Vector(const Vector& a) {
-         create(a.begin(), a.end());
+      Vector(const Vector& source) {
+         create(source.begin(), source.end());
       }
 
       ~Vector() {
@@ -38,14 +38,14 @@ class Vector {
          return *this;
       }
 
-      Vector& operator=(const Vector& source) noexcept {
+      Vector& operator=(Vector&& source) noexcept {
          if (this == &source)
             return *this;
          
          uncreate();
-         std::swap(a.data, data);
-         std::swap(a.avail, avail);
-         std::swap(a.limit, limit);
+         std::swap(source.data, data);
+         std::swap(source.avail, avail);
+         std::swap(source.limit, limit);
       }
 
 
@@ -94,11 +94,11 @@ class Vector {
          return *(avail - 1);
       }
 
-      T* data() noexcept {
+      T* eData() noexcept {
          return data;
       }
 
-      const T* data() const noexcept {
+      const T* eData() const noexcept {
          return data;
       }
 
@@ -170,11 +170,11 @@ class Vector {
       }
 
       size_type reserve(size_type newCapacity) {
-         if (new_capacity > max_size() || n < 0)
+         if (newCapacity > max_size() || newCapacity < 0)
             throw std::out_of_range("Exceeded maximum size limit");
          
          if (newCapacity > capacity()) {
-            iterator new_data = alloc.allocate(n);
+            iterator new_data = alloc.allocate(newCapacity);
             iterator new_avail = std::uninitialized_copy(data, avail, new_data);
             uncreate();
 
@@ -205,21 +205,84 @@ class Vector {
          uncreate();
       }
 
-      iterator insert(iterator position, const T& value) {
-         if (position < begin() || position > end())
-            throw std::out_of_range("Position out of range");
-         
+      void push_back(const T& value) {
+         unchecked_append(value);
+      }
+
+      void emplace_back(const T& value) {
          if (avail == limit)
             grow();
          
-         iterator it = avail;
-         while (it != position) {
-            *it = *(it - 1);
-            --it;
+         unchecked_append(value);
+      }
+
+      void pop_back() {
+         if (data == avail)
+            throw std::out_of_range("Vector is empty");
+         
+         alloc.destroy(--avail);
+      }
+
+      void resize(size_type n, const T& value = T{}) {
+         if (n > max_size() || n < 0)
+            throw std::out_of_range("Exceeded maximum size limit");
+         
+         if (n > size()) {
+            if (n > capacity())
+               reserve(n * 2);
+            
+            while (size() < n) {
+               unchecked_append(value);
+            }
          }
-         *position = value;
-         ++avail;
-         return position;
+         else if (n < size()) {
+            while (size() > n)
+               pop_back();
+         }
+      }
+
+      void swap(Vector& other) noexcept {
+         std::swap(data, other.data);
+         std::swap(avail, other.avail);
+         std::swap(limit, other.limit);
+      }
+
+
+      // ==NON-MEMBER FUNCTIONS==
+      bool operator==(const Vector<T>& rhs) {
+         if (size() != rhs.size()) {
+            return false;
+         }
+         for (auto i = 0; i < size(); ++i) {
+            if (eData()[i] != rhs.eData()[i]) {
+                  return false;
+            }
+         }
+         return true;
+      }
+
+      bool operator!=(const Vector<T>& rhs) {
+         return !(*this == rhs);
+      }
+
+      bool operator<(const Vector<T>& rhs) {
+         return *this < rhs;
+      }
+
+      bool operator>(const Vector<T>& rhs) {
+         return *this > rhs;
+      }
+
+      bool operator<=(const Vector<T>& rhs) {
+         return !(*this > rhs);
+      }
+
+      bool operator>=(const Vector<T>& rhs) {
+         return !(*this < rhs);
+      }
+
+      void swap(Vector<T>& lhs, Vector<T>& rhs) {
+         lhs.swap(rhs);
       }
 
    

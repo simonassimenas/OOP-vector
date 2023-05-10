@@ -25,6 +25,10 @@ class Vector {
          create(source.begin(), source.end());
       }
 
+      Vector(Vector&& source) noexcept : data{source.data}, avail{source.avail}, limit{source.limit} {
+         source.data = source.avail = source.limit = nullptr;
+      }
+
       ~Vector() {
          uncreate();
       }

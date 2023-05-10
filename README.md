@@ -1,5 +1,5 @@
 
-# OOP - Vector library
+# OOP - Vector class
 
 ## Aprašymas
 
